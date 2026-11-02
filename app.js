@@ -138,22 +138,50 @@ function onEvent(text) {
     }
 }
 
+// The board answers "ping" with "pong". No answer within PONG_WAIT_MS means it is offline.
+const PING_EVERY_MS = 15 * 1000;
+const PONG_WAIT_MS = 5 * 1000;
+let pongTimer = null;
+
+function sendPing() {
+    // A busy board cannot answer, but it is obviously alive
+    if (!client.connected || current) {
+        return;
+    }
+    client.publish(CONFIG.commandTopic, "ping", { qos: 0 });
+    clearTimeout(pongTimer);
+    pongTimer = setTimeout(() => showStatus("offline"), PONG_WAIT_MS);
+}
+
+function onPong() {
+    clearTimeout(pongTimer);
+    showStatus("online");
+}
+
 const client = mqtt.connect(CONFIG.mqttUrl, {
     username: CONFIG.mqttToken,
     password: "",
 });
 
 client.on("connect", () => {
-    client.subscribe([CONFIG.statusTopic, CONFIG.eventTopic, CONFIG.uploadStatusTopic], { qos: 1 });
-});
+    client.subscribe([CONFIG.statusTopic, CONFIG.eventTopic, CONFIG.uploadStatusTopic],     { qos: 1 }, sendPing);
+    });
+
+setInterval(sendPing, PING_EVERY_MS);
 
 client.on("message", (topic, message) => {
     const text = message.toString();
     console.log("MQTT message:", topic, text);
     if (topic === CONFIG.statusTopic) {
-        showStatus(text);
+        if (text !== "online") {
+            showStatus(text);
+        }
     } else if (topic === CONFIG.eventTopic) {
-        onEvent(text);
+        if (text === "pong") {
+            onPong();
+        } else {
+            onEvent(text);
+        }
     } else if (topic === CONFIG.uploadStatusTopic) {
         // After a page reload we may have missed "uploading", so progress also marks the board busy
         if (!current) {
@@ -180,6 +208,7 @@ for (const op of OPERATIONS) {
 }
 
 updateButtons();
+showStatus("offline");
 reloadImage();
 
 if (sessionStorage.getItem("showUploaded")) {
