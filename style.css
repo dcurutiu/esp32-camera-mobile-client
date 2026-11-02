@@ -69,8 +69,10 @@ button {
     transition: background 0.15s, transform 0.05s;
 }
 
-button:hover:not(:disabled) {
-    background: var(--accent-hover);
+@media (hover: hover) {
+    button:hover:not(:disabled) {
+        background: var(--accent-hover);
+    }
 }
 
 button:active:not(:disabled) {
@@ -108,8 +110,14 @@ img {
     text-decoration: none;
 }
 
-.download:hover {
-    background: var(--accent);
+@media (hover: hover) {
+    .download:hover {
+        background: var(--accent);
+    }
+}
+
+.download:active {
+    background: var(--accent-active);
 }
 
 .progress {
