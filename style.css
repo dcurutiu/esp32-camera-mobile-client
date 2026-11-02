@@ -112,6 +112,42 @@ img {
     background: var(--accent);
 }
 
+.progress {
+    position: relative;
+    margin-bottom: 16px;
+    border-radius: 8px;
+    background: var(--surface);
+    overflow: hidden;
+}
+
+.progress-fill {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    background: var(--accent);
+    transition: width 0.3s;
+    animation: pulse 1.2s ease-in-out infinite;
+}
+
+.progress-text {
+    position: relative;
+    display: block;
+    text-align: center;
+    font-size: 18px;
+    line-height: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+}
+
+@keyframes pulse {
+    50% {
+        opacity: 0.5;
+    }
+}
+
 .icon-btn {
     flex: none;
     padding: 4px;

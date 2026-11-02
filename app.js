@@ -5,6 +5,10 @@ const downloadLink = document.getElementById("downloadLink");
 const errorBox = document.getElementById("errorBox");
 const errorText = document.getElementById("errorText");
 const toast = document.getElementById("toast");
+const buttonsRow = document.getElementById("buttonsRow");
+const progress = document.getElementById("progress");
+const progressFill = document.getElementById("progressFill");
+const progressText = document.getElementById("progressText");
 
 const TOAST_MS = 1500;
 const IMAGE_RETRIES = 15;        // how many times to re-download after an upload
@@ -50,7 +54,21 @@ let current = null;      // the operation in progress, or null when idle
 let waitingFor = "";     // the event we expect next
 let timeoutTimer = null;
 
+function setProgress(percentText) {
+    progressFill.style.width = percentText || "0%";
+    progressText.textContent = percentText ? "Uploading " + percentText : "Working...";
+}
+
 function updateButtons() {
+    // While acquiring, a progress bar of the same size replaces the buttons
+    const uploading = current === OPERATIONS[0];
+    if (uploading && progress.classList.contains("hidden")) {
+        progress.style.height = buttonsRow.offsetHeight + "px";
+        setProgress("");
+    }
+    buttonsRow.classList.toggle("hidden", uploading);
+    progress.classList.toggle("hidden", !uploading);
+
     for (const op of OPERATIONS) {
         op.button.disabled = !espOnline || current !== null;
         op.button.textContent = current === op ? "Working..." : op.label;
@@ -238,7 +256,7 @@ client.on("message", (topic, message) => {
             setBusy(OPERATIONS[0], OPERATIONS[0].endEvent);
         }
         resetTimeout();
-        showToast("Uploading " + text);
+        setProgress(text);
     }
 });
 

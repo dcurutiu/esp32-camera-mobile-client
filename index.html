@@ -19,9 +19,14 @@
         <button type="button" id="reloadBtn" class="icon-btn" aria-label="Check board status"><img src="reload.png" alt=""></button>
     </div>
 
-    <div class="buttons">
+    <div id="buttonsRow" class="buttons">
         <button id="acquireBtn">Acquire image</button>
         <button id="calibrateBtn">Calibrate camera</button>
+    </div>
+
+    <div id="progress" class="progress hidden">
+        <div id="progressFill" class="progress-fill"></div>
+        <span id="progressText" class="progress-text">Working...</span>
     </div>
 
     <img id="photo" alt="Latest image">
@@ -39,8 +44,8 @@
     <div id="toast" class="toast hidden"></div>
 
     <script src="https://unpkg.com/mqtt@5/dist/mqtt.min.js"></script>
-    <script src="config.js?v=4"></script>
-    <script src="app.js?v=4"></script>
+    <script src="config.js?v=5"></script>
+    <script src="app.js?v=5"></script>
     <script src="pwa.js"></script>
 </body>
 </html>
