@@ -7,6 +7,8 @@ const errorText = document.getElementById("errorText");
 const toast = document.getElementById("toast");
 
 const TOAST_MS = 1500;
+const IMAGE_RETRIES = 15;        // how many times to re-download after an upload
+const IMAGE_RETRY_MS = 2000;     // pause between those downloads
 let toastTimer = null;
 
 function showToast(message) {
@@ -105,13 +107,55 @@ function resetTimeout() {
     timeoutTimer = setTimeout(onTimeout, current.timeoutMs);
 }
 
-function reloadImage() {
-    // The changing "t" in the file name makes the browser fetch the image again instead of using its cache
+// Cheap fingerprint of the image bytes: the length plus a hash of every 97th byte.
+// A new picture changes the compressed data everywhere, so this is enough to tell two pictures apart.
+function fingerprint(bytes) {
+    let hash = 2166136261;
+    for (let i = 0; i < bytes.length; i += 97) {
+        hash = Math.imul(hash ^ bytes[i], 16777619) >>> 0;
+    }
+    return bytes.length + ":" + hash;
+}
+
+let imageFingerprint = "";
+let imageLoop = 0;       // the id of the running refresh loop; a newer loop cancels the older one
+
+// Downloads the image fresh (no cache), shows it and returns its fingerprint
+async function loadImage() {
+    // The changing "t" in the file name makes the browser and the CDN treat it as a new file
     const base = `https://res.cloudinary.com/${CONFIG.cloudName}/image/upload`;
     const file = `${CONFIG.publicId}.jpg?t=${Date.now()}`;
-    photo.src = `${base}/${file}`;
     // The displayed image is the original upload; fl_attachment makes Cloudinary send it as a download
     downloadLink.href = `${base}/fl_attachment:esp32_view/${file}`;
+
+    try {
+        const response = await fetch(`${base}/${file}`, { cache: "no-store" });
+        const bytes = new Uint8Array(await response.arrayBuffer());
+        photo.src = URL.createObjectURL(new Blob([bytes], { type: "image/jpeg" }));
+        return fingerprint(bytes);
+    } catch (error) {
+        photo.src = `${base}/${file}`;   // fall back to a plain load
+        return imageFingerprint;
+    }
+}
+
+// After an upload Cloudinary may still serve the old picture for a while,
+// so keep loading it until the fingerprint changes
+async function refreshImageUntilChanged() {
+    const id = ++imageLoop;
+    for (let attempt = 1; attempt <= IMAGE_RETRIES; attempt++) {
+        const newFingerprint = await loadImage();
+        if (id !== imageLoop) {
+            return;
+        }
+        if (newFingerprint !== imageFingerprint) {
+            imageFingerprint = newFingerprint;
+            showToast("Board uploaded");
+            return;
+        }
+        await new Promise((resolve) => setTimeout(resolve, IMAGE_RETRY_MS));
+    }
+    showToast("Uploaded, but the old image is still served");
 }
 
 function start(op) {
@@ -128,9 +172,7 @@ function onEvent(text) {
         } else if (text === op.endEvent) {
             setIdle();
             if (op.command === "acquire") {
-                // The page reloads right away, so the toast is shown again after the reload
-                sessionStorage.setItem("showUploaded", "1");
-                location.reload();
+                refreshImageUntilChanged();
             } else {
                 showToast("Board " + op.endEvent);
             }
@@ -217,9 +259,6 @@ for (const op of OPERATIONS) {
 
 updateButtons();
 showStatus("offline");
-reloadImage();
-
-if (sessionStorage.getItem("showUploaded")) {
-    sessionStorage.removeItem("showUploaded");
-    showToast("Board uploaded");
-}
+loadImage().then((value) => {
+    imageFingerprint = value;
+});
