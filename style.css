@@ -112,6 +112,36 @@ img {
     background: var(--accent);
 }
 
+.icon-btn {
+    flex: none;
+    padding: 4px;
+    background: none;
+    line-height: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.icon-btn:hover:not(:disabled),
+.icon-btn:active:not(:disabled) {
+    background: none;
+}
+
+.icon-btn img {
+    width: 24px;
+    height: 24px;
+    background: none;
+    border-radius: 0;
+}
+
+.icon-btn.spinning img {
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .error {
     padding: 24px 12px;
     border-radius: 8px;

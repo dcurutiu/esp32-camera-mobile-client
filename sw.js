@@ -11,6 +11,7 @@ const SHELL = [
     "config.js",
     "settings.js",
     "pwa.js",
+    "reload.png",
     "manifest.json",
     "icon-192.png",
     "icon-512.png",

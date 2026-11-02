@@ -139,22 +139,30 @@ function onEvent(text) {
 }
 
 // The board answers "ping" with "pong". No answer within PONG_WAIT_MS means it is offline.
-const PING_EVERY_MS = 15 * 1000;
 const PONG_WAIT_MS = 5 * 1000;
+const reloadBtn = document.getElementById("reloadBtn");
 let pongTimer = null;
 
+function stopSpinning() {
+    clearTimeout(pongTimer);
+    reloadBtn.classList.remove("spinning");
+}
+
+// Only runs when the reload button is pressed
 function sendPing() {
-    // A busy board cannot answer, but it is obviously alive
-    if (!client.connected || current) {
+    if (!client.connected || reloadBtn.classList.contains("spinning")) {
         return;
     }
+    reloadBtn.classList.add("spinning");
     client.publish(CONFIG.commandTopic, "ping", { qos: 0 });
-    clearTimeout(pongTimer);
-    pongTimer = setTimeout(() => showStatus("offline"), PONG_WAIT_MS);
+    pongTimer = setTimeout(() => {
+        stopSpinning();
+        showStatus("offline");
+    }, PONG_WAIT_MS);
 }
 
 function onPong() {
-    clearTimeout(pongTimer);
+    stopSpinning();
     showStatus("online");
 }
 
@@ -164,10 +172,10 @@ const client = mqtt.connect(CONFIG.mqttUrl, {
 });
 
 client.on("connect", () => {
-    client.subscribe([CONFIG.statusTopic, CONFIG.eventTopic, CONFIG.uploadStatusTopic],     { qos: 1 }, sendPing);
-    });
+    client.subscribe([CONFIG.statusTopic, CONFIG.eventTopic, CONFIG.uploadStatusTopic], { qos: 1 });
+});
 
-setInterval(sendPing, PING_EVERY_MS);
+reloadBtn.addEventListener("click", sendPing);
 
 client.on("message", (topic, message) => {
     const text = message.toString();
