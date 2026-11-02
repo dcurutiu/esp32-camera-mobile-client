@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ESP32 View - Settings</title>
+    <meta name="theme-color" content="#0f1f12">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icon-192.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Settings</h1>
+
+    <form id="configForm" class="config-form">
+        <label>flespi MQTT URL
+            <input name="mqttUrl" required>
+        </label>
+        <label>flespi MQTT token
+            <input name="mqttToken" type="password" required autocomplete="off">
+        </label>
+        <label>Status topic
+            <input name="statusTopic" required>
+        </label>
+        <label>Command topic
+            <input name="commandTopic" required>
+        </label>
+        <label>Event topic
+            <input name="eventTopic" required>
+        </label>
+        <label>Upload status topic
+            <input name="uploadStatusTopic" required>
+        </label>
+        <label>Cloudinary cloud name
+            <input name="cloudName" required>
+        </label>
+        <label>Image public ID
+            <input name="publicId" required>
+        </label>
+
+        <div class="buttons">
+            <button type="submit">Save</button>
+            <button type="button" id="resetBtn">Defaults</button>
+        </div>
+        <button type="button" id="clearBtn">Clear saved settings</button>
+    </form>
+
+    <p><a href="index.html">&larr; Back</a></p>
+
+    <div id="toast" class="toast hidden"></div>
+
+    <script src="config.js"></script>
+    <script src="settings.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html>

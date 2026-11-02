@@ -1,0 +1,147 @@
+:root {
+    color-scheme: dark;
+    --bg: #0f1f12;
+    --surface: #1b2e1f;
+    --border: #2f4a34;
+    --text: #e8f5e9;
+    --muted: #81a184;
+    --accent: #43a047;
+    --accent-hover: #4caf50;
+    --accent-active: #2e7d32;
+    --online: #66bb6a;
+    --offline: #ef5350;
+}
+
+body {
+    font-family: sans-serif;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 16px;
+    text-align: center;
+    background: var(--bg);
+    color: var(--text);
+}
+
+a {
+    color: var(--online);
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--muted);
+}
+
+.dot.online {
+    background: var(--online);
+    box-shadow: 0 0 8px var(--online);
+}
+
+.dot.offline {
+    background: var(--offline);
+    box-shadow: 0 0 8px var(--offline);
+}
+
+.buttons {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+button {
+    flex: 1;
+    padding: 14px;
+    font-size: 18px;
+    border: none;
+    border-radius: 8px;
+    background: var(--accent);
+    color: white;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.05s;
+}
+
+button:hover:not(:disabled) {
+    background: var(--accent-hover);
+}
+
+button:active:not(:disabled) {
+    background: var(--accent-active);
+    transform: scale(0.96);
+}
+
+button:disabled {
+    background: var(--surface);
+    color: var(--muted);
+    cursor: not-allowed;
+}
+
+img {
+    width: 100%;
+    border-radius: 8px;
+    background: var(--surface);
+}
+
+.error {
+    padding: 24px 12px;
+    border-radius: 8px;
+    background: #3b1f1f;
+    color: #ffb4ab;
+}
+
+.face {
+    font-size: 96px;
+    line-height: 1;
+}
+
+.hidden {
+    display: none;
+}
+
+.config-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: left;
+}
+
+.config-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 14px;
+}
+
+.config-form input {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text);
+}
+
+.config-form input:focus {
+    outline: 2px solid var(--accent);
+    border-color: var(--accent);
+}
+
+.toast {
+    position: fixed;
+    left: 16px;
+    bottom: 16px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    color: var(--text);
+    font-size: 14px;
+}

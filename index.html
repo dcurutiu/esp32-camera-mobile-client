@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ESP32 Camera</title>
+    <meta name="theme-color" content="#0f1f12">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>ESP32 View</h1>
+    <p><a href="config.html">Settings</a></p>
+
+    <div class="status">
+        <span id="dot" class="dot"></span>
+        <span id="statusText">connecting...</span>
+    </div>
+
+    <div class="buttons">
+        <button id="acquireBtn">Acquire image</button>
+        <button id="calibrateBtn">Calibrate camera</button>
+    </div>
+
+    <img id="photo" alt="Latest image">
+
+    <div id="errorBox" class="error hidden">
+        <div class="face">&#128542;</div>
+        <p id="errorText"></p>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+
+    <script src="https://unpkg.com/mqtt@5/dist/mqtt.min.js"></script>
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html>
