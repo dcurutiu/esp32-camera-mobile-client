@@ -8,7 +8,7 @@ const DEFAULT_CONFIG = {
     eventTopic: "camera/event",
     uploadStatusTopic: "camera/upload-status",
     cloudName: "",
-    publicId: "lates++",
+    publicId: "plopilor",
 };
 
 const CONFIG_STORAGE_KEY = "esp32_view_config";

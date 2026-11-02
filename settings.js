@@ -22,7 +22,7 @@ form.addEventListener("submit", (event) => {
         values[key] = form.elements[key].value.trim();
     }
     localStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify(values));
-    showToast("Saved");
+    location.href = "index.html";
 });
 
 // Puts the default values in the form; the token and cloud name are kept as typed

@@ -1,6 +1,7 @@
 const dot = document.getElementById("dot");
 const statusText = document.getElementById("statusText");
 const photo = document.getElementById("photo");
+const downloadLink = document.getElementById("downloadLink");
 const errorBox = document.getElementById("errorBox");
 const errorText = document.getElementById("errorText");
 const toast = document.getElementById("toast");
@@ -65,11 +66,13 @@ function showError(message) {
     errorText.textContent = message;
     errorBox.classList.remove("hidden");
     photo.classList.add("hidden");
+    downloadLink.classList.add("hidden");
 }
 
 function hideError() {
     errorBox.classList.add("hidden");
     photo.classList.remove("hidden");
+    downloadLink.classList.remove("hidden");
 }
 
 function onTimeout() {
@@ -103,7 +106,12 @@ function resetTimeout() {
 }
 
 function reloadImage() {
-    photo.src = `https://res.cloudinary.com/${CONFIG.cloudName}/image/upload/${CONFIG.publicId}.jpg?t=${Date.now()}`;
+    // The changing "t" in the file name makes the browser fetch the image again instead of using its cache
+    const base = `https://res.cloudinary.com/${CONFIG.cloudName}/image/upload`;
+    const file = `${CONFIG.publicId}.jpg?t=${Date.now()}`;
+    photo.src = `${base}/${file}`;
+    // The displayed image is the original upload; fl_attachment makes Cloudinary send it as a download
+    downloadLink.href = `${base}/fl_attachment:esp32_view/${file}`;
 }
 
 function start(op) {
