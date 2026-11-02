@@ -155,6 +155,10 @@ client.on("message", (topic, message) => {
     } else if (topic === CONFIG.eventTopic) {
         onEvent(text);
     } else if (topic === CONFIG.uploadStatusTopic) {
+        // After a page reload we may have missed "uploading", so progress also marks the board busy
+        if (!current) {
+            setBusy(OPERATIONS[0], OPERATIONS[0].endEvent);
+        }
         resetTimeout();
         showToast("Uploading " + text);
     }
