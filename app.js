@@ -13,7 +13,7 @@ const progressFill = document.getElementById("progressFill");
 const progressText = document.getElementById("progressText");
 
 const TOAST_MS = 1500;
-const RELOAD_DELAY_MS = 2000;    // wait after "uploaded" before reloading the page
+const RELOAD_DELAY_MS = 3000;    // wait after "uploaded" before reloading the page
 const MIN_SPIN_MS = 800;         // keep the refresh icon spinning long enough to be seen
 let toastTimer = null;
 
@@ -164,13 +164,17 @@ function onEvent(text) {
             showToast(op.startToast);
             setBusy(op, op.endEvent);
         } else if (text === op.endEvent) {
-            setIdle();
             if (op.command === "acquire") {
-                // Give Cloudinary a moment, then reload the whole page; the toast is shown again after the reload
+                // Keep the bar at 99% while Cloudinary processes, then reload the whole page; the toast is shown again after the reload
+                clearTimeout(timeoutTimer);
+                timeoutTimer = null;
+                current = null;
+                setProgress("99%");
                 showToast("Board uploaded");
                 sessionStorage.setItem("showUploaded", "1");
                 setTimeout(() => location.reload(), RELOAD_DELAY_MS);
             } else {
+                setIdle();
                 showToast("Board " + op.endEvent);
             }
         }
