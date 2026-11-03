@@ -5,6 +5,8 @@ const downloadLink = document.getElementById("downloadLink");
 const errorBox = document.getElementById("errorBox");
 const errorText = document.getElementById("errorText");
 const toast = document.getElementById("toast");
+const photoDate = document.getElementById("photoDate");
+const refreshImgBtn = document.getElementById("refreshImgBtn");
 const buttonsRow = document.getElementById("buttonsRow");
 const progress = document.getElementById("progress");
 const progressFill = document.getElementById("progressFill");
@@ -12,6 +14,7 @@ const progressText = document.getElementById("progressText");
 
 const TOAST_MS = 1500;
 const RELOAD_DELAY_MS = 2000;    // wait after "uploaded" before reloading the page
+const MIN_SPIN_MS = 800;         // keep the refresh icon spinning long enough to be seen
 let toastTimer = null;
 
 function showToast(message) {
@@ -128,9 +131,25 @@ function loadImage() {
     // The changing "t" in the file name makes the browser fetch the image again instead of using its cache
     const base = `https://res.cloudinary.com/${CONFIG.cloudName}/image/upload`;
     const file = `${CONFIG.publicId}.jpg?t=${Date.now()}`;
-    photo.src = `${base}/${file}`;
     // The displayed image is the original upload; fl_attachment makes Cloudinary send it as a download
     downloadLink.href = `${base}/fl_attachment:esp32_view/${file}`;
+
+    refreshImgBtn.classList.add("spinning");
+    return fetch(`${base}/${file}`, { cache: "no-store" })
+        .then(async (response) => {
+            const blob = await response.blob();
+            photo.src = URL.createObjectURL(blob);
+            // Last-Modified is the image date; if the browser may not read it, show when we downloaded it
+            const modified = response.headers.get("last-modified");
+            photoDate.textContent = modified
+                ? "Image from " + new Date(modified).toLocaleString()
+                : "Downloaded " + new Date().toLocaleString();
+        })
+        .catch(() => {
+            photo.src = `${base}/${file}`;   // plain load as a fallback
+            photoDate.textContent = "Downloaded " + new Date().toLocaleString();
+        })
+        .finally(() => setTimeout(() => refreshImgBtn.classList.remove("spinning"), MIN_SPIN_MS));
 }
 
 function start(op) {
@@ -239,6 +258,7 @@ for (const op of OPERATIONS) {
 updateButtons();
 showStatus("offline");
 loadImage();
+refreshImgBtn.addEventListener("click", loadImage);
 
 if (sessionStorage.getItem("showUploaded")) {
     sessionStorage.removeItem("showUploaded");

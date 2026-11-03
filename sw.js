@@ -1,6 +1,6 @@
 // Network first, falling back to the cache, so the app shell opens even without a connection
 // (MQTT and the Cloudinary image still need internet).
-const CACHE_NAME = "esp32-view-v7";
+const CACHE_NAME = "esp32-view-v9";
 const MQTT_LIB = "https://unpkg.com/mqtt@5/dist/mqtt.min.js";
 const SHELL = [
     "./",
