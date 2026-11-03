@@ -192,7 +192,8 @@ const client = mqtt.connect(CONFIG.mqttUrl, {
 });
 
 client.on("connect", () => {
-    client.subscribe([CONFIG.statusTopic, CONFIG.eventTopic, CONFIG.uploadStatusTopic], { qos: 1 });
+    // Subscribed first, so the pong cannot be missed; this is the implicit status check at page start
+    client.subscribe([CONFIG.statusTopic, CONFIG.eventTopic, CONFIG.uploadStatusTopic], { qos: 1 }, sendPing);
 });
 
 reloadBtn.addEventListener("click", sendPing);
