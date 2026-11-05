@@ -10,7 +10,7 @@
     <link rel="apple-touch-icon" href="icon-192.png">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="home">
     <h1>ESP32 View</h1>
 
     <div class="status">
@@ -22,7 +22,6 @@
     <div id="buttonsRow" class="buttons">
         <button id="acquireBtn">Acquire image</button>
         <button id="calibrateBtn">Calibrate camera</button>
-        <button id="rebootBtn">Reboot board</button>
     </div>
 
     <div id="progress" class="progress hidden">
@@ -31,18 +30,17 @@
     </div>
 
     <img id="photo" alt="Latest image">
+    <div id="errorBox" class="error hidden">
+        <p id="errorText"></p>
+    </div>
     <div class="image-info">
         <span id="photoDate">--</span>
         <button type="button" id="refreshImgBtn" class="icon-btn" aria-label="Refresh image"><img src="reload.png" alt=""></button>
     </div>
     <div class="links">
         <a id="downloadLink" class="download" href="#"> Download full resolution</a>
-        <br>
         <a class="download" href="config.html">Open Settings</a>
-    </div>
-
-    <div id="errorBox" class="error hidden">
-        <p id="errorText"></p>
+        <button type="button" id="rebootBtn" class="download">Reboot board</button>
     </div>
 
     <div id="toast" class="toast hidden"></div>

@@ -92,18 +92,35 @@ img {
     background: var(--surface);
 }
 
-.links {
-    display: inline-flex;
+.home {
+    display: flex;
     flex-direction: column;
-    gap: 8px;
+    min-height: 100dvh;
+    box-sizing: border-box;
+}
+
+.home > * {
+    flex-shrink: 0;
+}
+
+.links {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
 }
 
 .download {
     display: block;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 240px;
+    flex: none;
     text-align: center;
-    margin-top: 8px;
     padding: 6px 12px;
     font-size: 13px;
+    background: transparent;
     border: 1px solid var(--accent);
     border-radius: 6px;
     color: var(--text);
