@@ -7,6 +7,7 @@ const DEFAULT_CONFIG = {
     commandTopic: "camera/command",
     eventTopic: "camera/event",
     uploadStatusTopic: "camera/upload-status",
+    errorTopic: "camera/error",
     cloudName: "",
     publicId: "plopilor",
 };

@@ -11,6 +11,7 @@ const buttonsRow = document.getElementById("buttonsRow");
 const progress = document.getElementById("progress");
 const progressFill = document.getElementById("progressFill");
 const progressText = document.getElementById("progressText");
+const rebootBtn = document.getElementById("rebootBtn");
 
 const TOAST_MS = 1500;
 const RELOAD_DELAY_MS = 3000;    // wait after "uploaded" before reloading the page
@@ -75,6 +76,7 @@ function updateButtons() {
         op.button.disabled = !espOnline || current !== null;
         op.button.textContent = current === op ? "Working..." : op.label;
     }
+    rebootBtn.disabled = !espOnline;
 }
 
 function showStatus(status) {
@@ -216,10 +218,20 @@ const client = mqtt.connect(CONFIG.mqttUrl, {
 
 client.on("connect", () => {
     // Subscribed first, so the pong cannot be missed; this is the implicit status check at page start
-    client.subscribe([CONFIG.statusTopic, CONFIG.eventTopic, CONFIG.uploadStatusTopic], { qos: 1 }, sendPing);
+    client.subscribe([CONFIG.statusTopic, CONFIG.eventTopic, CONFIG.uploadStatusTopic, CONFIG.errorTopic], { qos: 1 }, sendPing);
 });
 
 reloadBtn.addEventListener("click", sendPing);
+
+// The board restarts and reconnects by itself; it shows offline until it is back
+rebootBtn.addEventListener("click", () => {
+    if (!confirm("Reboot the board?")) {
+        return;
+    }
+    setIdle();
+    client.publish(CONFIG.commandTopic, "reboot", { qos: 1 });
+    showToast("Rebooting board...");
+});
 
 client.on("message", (topic, message) => {
     const text = message.toString();
@@ -234,6 +246,9 @@ client.on("message", (topic, message) => {
         } else {
             onEvent(text);
         }
+    } else if (topic === CONFIG.errorTopic) {
+        showError(text);
+        setIdle();
     } else if (topic === CONFIG.uploadStatusTopic) {
         // After a page reload we may have missed "uploading", so progress also marks the board busy
         if (!current) {
